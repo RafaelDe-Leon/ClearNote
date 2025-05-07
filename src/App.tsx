@@ -1,19 +1,19 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
-import { Button } from '@/components/ui/button'
+import { Routes, Route } from 'react-router-dom'
+import Home from './pages/Home.tsx'
+import Dashboard from './components/dashboard.tsx'
 
 // testing firestore connection
 import TestFirestore from './components/testFirestore.tsx'
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
     <>
       <TestFirestore />
-      <Button>Click Me</Button>
+      <Routes>
+        <Route path='/' element={<Home />} />
+        <Route path='/dashboard' element={<Dashboard />} />
+      </Routes>
     </>
   )
 }
