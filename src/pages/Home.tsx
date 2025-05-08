@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button'
 import { Link } from 'react-router-dom'
+import NoteGenerator from '@/components/NoteGenerator'
 
 const Home = () => {
   return (
@@ -9,6 +10,8 @@ const Home = () => {
       <Link to='/dashboard'>
         <Button className='mt-4'>Go to Dashboard</Button>
       </Link>
+      <h1>Note Generator</h1>
+      <NoteGenerator />
     </div>
   )
 }

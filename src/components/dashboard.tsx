@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button'
 import { Link } from 'react-router-dom'
+import NoteGenerator from '../components/NoteGenerator'
 
 export default function Dashboard() {
   return (
@@ -8,6 +9,7 @@ export default function Dashboard() {
       <Link to='/'>
         <Button className='mt-4'>Go to Home</Button>
       </Link>
+      <NoteGenerator />
     </div>
   )
 }
