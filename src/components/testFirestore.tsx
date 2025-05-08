@@ -20,7 +20,7 @@ const TestFirestore = () => {
     testConnection()
   }, [])
 
-  return <div>Check the console for Firestore connection test results.</div>
+  return <div className='mb-6'>Check the console for Firestore connection test results.</div>
 }
 
 export default TestFirestore
