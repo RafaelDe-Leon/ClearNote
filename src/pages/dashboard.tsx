@@ -14,7 +14,7 @@ export default function Dashboard() {
         <Link to='/'>
           <Button className='mb-4'>Go to Home</Button>
         </Link>
-        <h1 className='text-3xl font-bold mb-2 bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent mb-6'>
+        <h1 className='text-3xl font-bold mb-2 bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent'>
           Professional Note Generator
         </h1>
 
@@ -23,7 +23,7 @@ export default function Dashboard() {
         </Suspense>
       </main>
       <footer className='py-4 border-t bg-muted/30'>
-        <div className='container mx-auto text-center text-sm text-muted-foreground'>
+        <div className='container mx-auto text-center text-ssm text-muted-foreground'>
           © 2025 ClearNote. All rights reserved.
         </div>
       </footer>
