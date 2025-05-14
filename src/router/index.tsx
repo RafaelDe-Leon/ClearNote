@@ -4,6 +4,8 @@ import '../App.css';
 import { Routes, Route } from 'react-router-dom';
 import Home from '../pages/Home.tsx';
 import Dashboard from '../pages/dashboard.tsx';
+import NotFound from '../pages/NotFound.tsx';
+
 import FirebaseAuthService from '@/services/firebaseAuthService.ts';
 //
 import FirestoreDbService from '@/services/db/firestoreDbService.ts';
@@ -79,6 +81,7 @@ function Router() {
           path="/"
           element={!isLoggedIn ? <Home /> : <Dashboard userData={userData} />}
         />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </>
   );

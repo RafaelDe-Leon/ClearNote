@@ -4,7 +4,6 @@ import NoteForm from '@/components/noteForm';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import FirebaseAuthService from '@/services/firebaseAuthService';
-import TestFirestore from '../components/testFirestore';
 
 import ThemeToggle from '@/components/theme-toggle';
 
@@ -50,7 +49,6 @@ export default function Dashboard({ userData }: dashboardProps) {
           © 2025 ClearNote. All rights reserved.
         </div>
       </footer>
-      <TestFirestore />
     </div>
   );
 }
