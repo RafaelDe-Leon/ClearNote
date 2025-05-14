@@ -10,16 +10,19 @@ import FirestoreDbService from '@/services/db/firestoreDbService.ts';
 import COLLECTION_NAMES from '@/constants/collectionNames.ts';
 import HealthcareProfessional from '@/models/healthCareProfessional.model.ts';
 
+import ClipLoader from 'react-spinners/ClipLoader';
+
 function Router() {
+  // set type to useState
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean | undefined>(undefined);
+  const [userData, setUserData] = useState<any | undefined>(undefined);
+
   const healthcareProfessionalsDbService = new FirestoreDbService(
     COLLECTION_NAMES.HEALTHCARE_PROFESSIONALS,
     HealthcareProfessional,
   );
 
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
   useEffect(() => {
-    console.log('USE EFFECT RUNNING');
     const firebaseAuthService = new FirebaseAuthService();
     const authListener = firebaseAuthService.authChangeSubscriber(
       async (user) => {
@@ -32,7 +35,7 @@ function Router() {
             uid,
             'dummyFirst',
             'dummyLast',
-            'SPEECH_THERAPISt',
+            'SPEECH_THERAPIST',
           );
           const created = await healthcareProfessionalsDbService.create(
             uid,
@@ -41,9 +44,15 @@ function Router() {
           console.log('created =', created);
         }
 
-        console.log('exists =', exists);
-        // if exists do nothign for now
-        // else need to addDoc
+        if (exists) {
+          setUserData({
+            firstName: exists.firstName,
+            lastName: exists.lastName,
+            role: exists.role,
+          });
+        } else {
+          setUserData(null);
+        }
         console.log('USER SIGNED IN', user);
         setIsLoggedIn(true);
       },
@@ -56,16 +65,20 @@ function Router() {
     return authListener;
   }, []);
 
-  if (!isLoggedIn) return <h1>LOADING...</h1>;
+  if (isLoggedIn === undefined)
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <ClipLoader color="#3498db" size={50} />
+      </div>
+    );
 
   return (
     <>
       <Routes>
-        {!isLoggedIn ? (
-          <Route path="/" element={<Home />} />
-        ) : (
-          <Route path="/" element={<Dashboard />} />
-        )}
+        <Route
+          path="/"
+          element={!isLoggedIn ? <Home /> : <Dashboard userData={userData} />}
+        />
       </Routes>
     </>
   );

@@ -10,7 +10,7 @@ import {
 } from 'firebase/firestore';
 
 // import COLLECTION_NAMES from '@/constants/collectionNames';
-import HealthcareProfessional from '@/models/healthCareProfessional.model';
+import HealthcareProfessional from '@/models/healthcareProfessional.model';
 
 class FirestoreDbService {
   db: Firestore;
@@ -38,17 +38,22 @@ class FirestoreDbService {
   async get(id?: string) {
     try {
       if (id) {
+        // Get a single document
         const retrieve = await getDoc(doc(this.collection, id));
-        return retrieve;
-        // get single doc
+        return retrieve.exists() ? retrieve : null;
       }
 
-      // return all docs
+      // Get all documents
+      const snapshot = await getDocs(this.collection);
+      const allDocs = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      return allDocs;
     } catch (error) {
       console.error('HANDLE ERROR', error);
       return null;
     }
   }
 }
-
 export default FirestoreDbService;
