@@ -1,32 +1,41 @@
-import { Suspense } from 'react'
-import NoteForm from '@/components/noteForm'
+import { Suspense } from 'react';
+import NoteForm from '@/components/noteForm';
 
-import { Link } from 'react-router-dom'
-import { Button } from '@/components/ui/button'
+import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import FirebaseAuthService from '@/services/firebaseAuthService';
 
-import ThemeToggle from '@/components/theme-toggle'
+import ThemeToggle from '@/components/theme-toggle';
 
 export default function Dashboard() {
+  const firebaseAuthService = new FirebaseAuthService();
+
   return (
-    <div className='min-h-screen flex flex-col bg-gradient-to-b from-background to-muted/30 dark:from-background dark:to-background'>
-      <main className='container mx-auto py-8 px-4 flex-1'>
+    <div className="from-background to-muted/30 dark:from-background dark:to-background flex min-h-screen flex-col bg-gradient-to-b">
+      <main className="container mx-auto flex-1 px-4 py-8">
         <ThemeToggle />
-        <Link to='/'>
-          <Button className='mb-4'>Go to Home</Button>
-        </Link>
-        <h1 className='text-3xl font-bold mb-2 bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent'>
+        {/* <Link to='/'> */}
+        <Button className="mb-4" onClick={firebaseAuthService.signOut}>
+          Sign Out
+        </Button>
+        {/* </Link> */}
+        <h1 className="from-primary to-primary/70 mb-2 bg-gradient-to-r bg-clip-text text-3xl font-bold text-transparent">
           Professional Note Generator
         </h1>
 
-        <Suspense fallback={<div className='p-8 text-center'>Loading note generator...</div>}>
+        <Suspense
+          fallback={
+            <div className="p-8 text-center">Loading note generator...</div>
+          }
+        >
           <NoteForm />
         </Suspense>
       </main>
-      <footer className='py-4 border-t bg-muted/30'>
-        <div className='container mx-auto text-center text-ssm text-muted-foreground'>
+      <footer className="bg-muted/30 border-t py-4">
+        <div className="text-ssm text-muted-foreground container mx-auto text-center">
           © 2025 ClearNote. All rights reserved.
         </div>
       </footer>
     </div>
-  )
+  );
 }
