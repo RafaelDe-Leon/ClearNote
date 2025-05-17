@@ -1,3 +1,4 @@
+// Collection names for the database
 enum COLLECTION_NAMES {
   HEALTHCARE_PROFESSIONALS = 'healthcare-professionals',
   PATIENTS = 'patients',

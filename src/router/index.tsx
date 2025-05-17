@@ -1,71 +1,99 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 
 import '../App.css';
 import { Routes, Route } from 'react-router-dom';
 import Home from '../pages/Home.tsx';
 import Dashboard from '../pages/dashboard.tsx';
-import NotFound from '../pages/NotFound.tsx';
+import NotFound from '../pages/notFound.tsx'; // Corrected casing
 
 import FirebaseAuthService from '@/services/firebaseAuthService.ts';
-//
 import FirestoreDbService from '@/services/db/firestoreDbService.ts';
 import COLLECTION_NAMES from '@/constants/collectionNames.ts';
-import HealthcareProfessional from '@/models/healthCareProfessional.model.ts';
+import HealthcareProfessional from '@/models/healthcareProfessional.model.ts'; // Corrected casing
 
 import ClipLoader from 'react-spinners/ClipLoader';
 
-function Router() {
-  // set type to useState
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean | undefined>(undefined);
-  const [userData, setUserData] = useState<any | undefined>(undefined);
+// Define an interface for UserData
+interface UserData {
+  uid: string;
+  firstName: string;
+  lastName: string;
+  role: string;
+}
 
-  const healthcareProfessionalsDbService = new FirestoreDbService(
-    COLLECTION_NAMES.HEALTHCARE_PROFESSIONALS,
-    HealthcareProfessional,
+function Router() {
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean | undefined>(undefined);
+  const [userData, setUserData] = useState<UserData | null | undefined>(
+    undefined,
   );
+
+  // Wrap healthcareProfessionalsDbService in useMemo to prevent re-creation on every render
+  const healthcareProfessionalsDbService = useMemo(() => {
+    return new FirestoreDbService(
+      COLLECTION_NAMES.HEALTHCARE_PROFESSIONALS,
+      HealthcareProfessional,
+    );
+  }, []); // Empty dependency array means it's created once
 
   useEffect(() => {
     const firebaseAuthService = new FirebaseAuthService();
     const authListener = firebaseAuthService.authChangeSubscriber(
       async (user) => {
-        // try to get healthcare profession
         const uid = user.uid;
-        const getUser = await healthcareProfessionalsDbService.get(uid);
-        const exists = getUser?.data();
-        if (!exists) {
+        let userProfileData: UserData | null = null;
+
+        const userDocumentSnap =
+          await healthcareProfessionalsDbService.get(uid);
+
+        // Check if userDocumentSnap is a DocumentSnapshot and exists
+        if (
+          userDocumentSnap &&
+          'exists' in userDocumentSnap &&
+          userDocumentSnap.exists()
+        ) {
+          const existingUserData = userDocumentSnap.data();
+          if (existingUserData) {
+            // Ensure data is not undefined
+            userProfileData = {
+              uid: uid,
+              firstName: existingUserData.firstName,
+              lastName: existingUserData.lastName,
+              role: existingUserData.role,
+            };
+          }
+        } else {
           const newHealthCareProfessional = new HealthcareProfessional(
             uid,
             'dummyFirst',
             'dummyLast',
             'SPEECH_THERAPIST',
           );
-          const created = await healthcareProfessionalsDbService.create(
+          await healthcareProfessionalsDbService.create(
             uid,
             newHealthCareProfessional.asObject(),
           );
-          console.log('created =', created);
+          console.log('New healthcare professional created with UID:', uid);
+          userProfileData = {
+            uid: uid,
+            firstName: newHealthCareProfessional.firstName,
+            lastName: newHealthCareProfessional.lastName,
+            role: newHealthCareProfessional.role,
+          };
         }
 
-        if (exists) {
-          setUserData({
-            firstName: exists.firstName,
-            lastName: exists.lastName,
-            role: exists.role,
-          });
-        } else {
-          setUserData(null);
-        }
-        console.log('USER SIGNED IN', user);
+        setUserData(userProfileData);
         setIsLoggedIn(true);
+        console.log('USER SIGNED IN. UserData set to:', userProfileData);
       },
       () => {
         console.log('USER LOGGED OUT');
         setIsLoggedIn(false);
+        setUserData(null); // Clear userData on logout
       },
     );
 
     return authListener;
-  }, []);
+  }, [healthcareProfessionalsDbService]); // Added healthcareProfessionalsDbService to dependency array
 
   if (isLoggedIn === undefined)
     return (
@@ -79,7 +107,13 @@ function Router() {
       <Routes>
         <Route
           path="/"
-          element={!isLoggedIn ? <Home /> : <Dashboard userData={userData} />}
+          element={
+            isLoggedIn && userData ? (
+              <Dashboard userData={userData} />
+            ) : (
+              <Home />
+            )
+          }
         />
         <Route path="*" element={<NotFound />} />
       </Routes>

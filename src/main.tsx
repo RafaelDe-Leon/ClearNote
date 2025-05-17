@@ -30,12 +30,17 @@ const auth = getAuth(app);
 
 export { db, auth };
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <BrowserRouter>
-      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-        <App />
-      </ThemeProvider>
-    </BrowserRouter>
-  </StrictMode>,
-);
+const rootElement = document.getElementById('root');
+
+if (rootElement && !rootElement.hasAttribute('data-react-root-created')) {
+  rootElement.setAttribute('data-react-root-created', 'true');
+  createRoot(rootElement).render(
+    <StrictMode>
+      <BrowserRouter>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <App />
+        </ThemeProvider>
+      </BrowserRouter>
+    </StrictMode>,
+  );
+}
